@@ -11,24 +11,19 @@ class Ship:
         self.bow = bow
         self.hit = [False] * max(length)
 
-    # TODO: Fix it based on next function
     def shoot_at(self, coordinates):
         """ (Ship, tuple) -> (bool)
         Shoot at the ship and check if on this coordinates is this ship set it in hit list
         """
-        if self.horizontal and coordinates[0] == self.bow[0] and \
-                (self.bow[1] <= coordinates[1] < self.bow[1] + self.length[1]) and self.hit[
-                    coordinates[1] - self.bow[1]] != True:
-            self.hit[coordinates[1] - self.bow[1]] = True
-            return True
+        try:
+            if self.horizontal:
+                self.hit[coordinates[1] - self.bow[1]] = True
+            else:
+                self.hit[coordinates[0] - self.bow[0]] = True
 
-        elif not self.horizontal and coordinates[1] == self.bow[1] and \
-                (self.bow[0] <= coordinates[0] < self.bow[0] + self.length[0]) and self.hit[
-                    coordinates[0] - self.bow[0]] != True:
-            self.hit[coordinates[0] - self.bow[0]] = True
             return True
-
-        return False
+        except IndexError:
+            return False
 
     def is_shot_at(self, coordinates):
         """ (Field, tuple) -> (bool)
@@ -40,7 +35,7 @@ class Ship:
             else:
                 return self.hit[coordinates[0] - self.bow[0]]
 
-        except Exception as e:
+        except Exception:
             return False
 
 
@@ -187,6 +182,7 @@ class Player:
         Init Player with specific name
         """
         self.__name = name
+        self.score = 0
 
     def read_position(self):
         """ (Player) -> (tuple(int, int))

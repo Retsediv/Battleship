@@ -32,6 +32,9 @@ class Game:
         """
         return self.fields[index].field_with_ships()
 
+    def detect_winner(self):
+        pass
+
     def play(self):
         """ (Game) -> (str)
         Play function that return name of winner
@@ -41,11 +44,12 @@ class Game:
             return 1 if index == 0 else 0
 
         print("Game Battleship")
-        while True:  # while is not a winner
-            # Show field of another player
+        while self.players[self.currentPlayer].score != 20:  # while is not a winner
             another_player_index = another_player(self.currentPlayer)
 
-            while True:
+            while True: # While player does't miss
+
+                # Show field of another player
                 print("Field of " + str(another_player_index + 1) + " player")
                 print(self.field_without_ships(another_player_index))
 
@@ -59,8 +63,9 @@ class Game:
                     break
                 else:
                     print("Good job! You can shout one more")
+                    self.players[self.currentPlayer].score += 1
 
-                print(6)
+                print()
 
             self.currentPlayer = another_player_index
 
