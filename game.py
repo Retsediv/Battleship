@@ -47,7 +47,7 @@ class Game:
         while self.players[self.currentPlayer].score != 20:  # while is not a winner
             another_player_index = another_player(self.currentPlayer)
 
-            while True: # While player does't miss
+            while True:  # While player does't miss
 
                 # Show field of another player
                 print("Field of " + str(another_player_index + 1) + " player")
@@ -68,7 +68,3 @@ class Game:
                 print()
 
             self.currentPlayer = another_player_index
-
-
-game = Game(["Andrii", "Joe"])
-game.play()
