@@ -14,7 +14,7 @@ class Ship:
         self.hit = [False] * max(length)
 
     def shoot_at(self, coordinates):
-        """ (Player, tuple) -> (bool)
+        """ (Ship, tuple) -> (bool)
         Shoot at the ship and check if on this coordinates is this ship set it in hit list
         """
         if self.horizontal and coordinates[0] == self.bow[0] and \
@@ -31,12 +31,26 @@ class Ship:
 
         return False
 
+    def is_shot_at(self, coordinates):
+        """ (Field, tuple) -> (bool)
+        Check if you had already shot at this coordinates by ship
+        """
+        try:
+            if self.horizontal:
+                return self.hit[coordinates[1] - self.bow[1]]
+            else:
+                return self.hit[coordinates[0] - self.bow[0]]
+
+        except Exception as e:
+            return False
+
 
 class Field:
     """
     Field with ships which gives possibility to generate a field,
       shoot at some coordinates and write out a field for user
     """
+
     def __init__(self):
         """ (Field) -> NoneType
         Generate field with random positioned ships
@@ -63,18 +77,19 @@ class Field:
 
         return True
 
-    def check_ship_pos(self, data, x, y, size, horizontal):
+    @staticmethod
+    def check_ship_pos(data, x, y, size, horizontal):
         """ (data, int, int, int, bool) -> (bool)
         Check if you could put ship at this coordinates
         """
         if horizontal:
             for i in range(y, y + size):
-                if not self.check_prop_place(data, x, i):
+                if not Field.check_prop_place(data, x, i):
                     return False
             return True
         else:
             for i in range(x, x + size):
-                if not self.check_prop_place(data, i, y):
+                if not Field.check_prop_place(data, i, y):
                     return False
             return True
 
@@ -99,18 +114,39 @@ class Field:
 
                 if self.check_ship_pos(field, x, y, size, horiz):
                     if horiz:
+                        ship = Ship((1, size), (x, y))
                         for i in range(y, y + size):
-                            field[x][i] = "x"
+                            field[x][i] = ship
                     else:
+                        ship = Ship((size, 1), (x, y), horizontal=False)
                         for i in range(x, x + size):
-                            field[i][y] = "x"
+                            field[i][y] = ship
 
                     break
 
         return field
 
-    # Field presentation
-    def __str__(self):
+    # Field output
+    def field_without_ships(self):
+        """ (Field) -> (str)
+        Return string that display only cells which are already shot
+          "x" -> shot at ship
+          " " -> not shot
+          "*" -> shot, but empty(no any ship here)
+        """
+        output = ""
+
+        for line in self.ships:
+            for ship in line:
+                if isinstance(ship, Ship):
+                    output += "■" if ship.is_shot_at((self.ships.index(line), line.index(ship))) else " "
+                else:
+                    output += ship if (ship is not None) else " "
+            output += "\n"
+
+        return output
+
+    def field_with_ships(self):
         """ (Field) -> (str)
         Transform data set to string that can be printed or displayed
         """
@@ -119,15 +155,26 @@ class Field:
             for i in line:
                 if i is None:
                     i = " "
+                if isinstance(i, Ship):
+                    i = "□"  # Icons for ships ■ □
+
                 result += i
             result += "\n"
 
         return result
 
-    # Shooting !!!
+    # Shooting!
+    def shoot_at(self, coordinates):
+        """ (Field, tuple) -> (bool)
+        Shoot at specific coordinates and return True if there is a ship and
+          you had not shot here yet
+        """
+        if isinstance(self.ships[coordinates[0]][coordinates[1]], Ship):
+            # Check if not already shot is at Ship class
+            return self.ships[coordinates[0]][coordinates[1]].shoot_at(coordinates)
 
-f = Field()
-print(f)
+        self.ships[coordinates[0]][coordinates[1]] = "*"
+        return False
 
 
 class Player:
@@ -161,3 +208,12 @@ class Player:
         column = index_of_letter(coordinates[0])
 
         return row, column
+
+
+if __name__ == "__main__":
+    pass
+    # field = Field()
+    # print(field.shoot_at((0, 0)))
+    # print(field.shoot_at((1, 0)))
+    # print(field.field_without_ships())
+    # print(field.field_with_ships())
