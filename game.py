@@ -31,3 +31,39 @@ class Game:
         Return string than represent field(with all ships) by specific index
         """
         return self.fields[index].field_with_ships()
+
+    def play(self):
+        """ (Game) -> (str)
+        Play function that return name of winner
+        """
+
+        def another_player(index):
+            return 1 if index == 0 else 0
+
+        print("Game Battleship")
+        while True:  # while is not a winner
+            # Show field of another player
+            another_player_index = another_player(self.currentPlayer)
+
+            while True:
+                print("Field of " + str(another_player_index + 1) + " player")
+                print(self.field_without_ships(another_player_index))
+
+                # Read coordinates for shooting
+                print("Player " + str(self.currentPlayer + 1) + " enter coordinates: ")
+                coordinates = self.read_position()
+
+                # Shoot
+                shot = self.fields[another_player_index].shoot_at(coordinates)
+                if not shot:
+                    break
+                else:
+                    print("Good job! You can shout one more")
+
+                print(6)
+
+            self.currentPlayer = another_player_index
+
+
+game = Game(["Andrii", "Joe"])
+game.play()
