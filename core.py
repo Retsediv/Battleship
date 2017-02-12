@@ -6,10 +6,10 @@ class Ship:
         Init new Ship with it's length(tuple like a (1, 2) or (4, 1)), direction(horizontal as primary),
           coordinates(top-left side) and fill list of hit as False for the start
         """
-        self.length = length
         self.horizontal = horizontal
         self.bow = bow
-        self.hit = [False] * max(length)
+        self.__length = length
+        self.__hit = [False] * max(length)
 
     def shoot_at(self, coordinates):
         """ (Ship, tuple) -> (bool)
@@ -17,9 +17,9 @@ class Ship:
         """
         try:
             if self.horizontal:
-                self.hit[coordinates[1] - self.bow[1]] = True
+                self.__hit[coordinates[1] - self.bow[1]] = True
             else:
-                self.hit[coordinates[0] - self.bow[0]] = True
+                self.__hit[coordinates[0] - self.bow[0]] = True
 
             return True
         except IndexError:
@@ -31,9 +31,9 @@ class Ship:
         """
         try:
             if self.horizontal:
-                return self.hit[coordinates[1] - self.bow[1]]
+                return self.__hit[coordinates[1] - self.bow[1]]
             else:
-                return self.hit[coordinates[0] - self.bow[0]]
+                return self.__hit[coordinates[0] - self.bow[0]]
 
         except Exception:
             return False
@@ -51,7 +51,7 @@ class Field:
           ships are represented as Ship object
           empty spaces as None type
         """
-        self.ships = self.generate_field()
+        self.__ships = self.generate_field()
 
     # Field generation
     @staticmethod
@@ -92,7 +92,7 @@ class Field:
         Generate a random field with all ships in proper way
         """
         import random
-        field = [[None] * 10 for i in range(10)]
+        field = [[None] * 10 for _ in range(10)]
         ships = [4, 3, 3, 2, 2, 2, 1, 1, 1, 1]
 
         while ships:
@@ -130,12 +130,13 @@ class Field:
         """
         output = ""
 
-        for line in self.ships:
-            for ship in line:
-                if isinstance(ship, Ship):
-                    output += "■" if ship.is_shot_at((self.ships.index(line), line.index(ship))) else " "
+        for line in self.__ships:
+            for ship_i in range(len(line)):
+            # for ship in line:
+                if isinstance(line[ship_i], Ship):
+                    output += "■" if line[ship_i].is_shot_at((self.__ships.index(line), ship_i)) else " "
                 else:
-                    output += ship if (ship is not None) else " "
+                    output += line[ship_i] if (line[ship_i] is not None) else " "
             output += "\n"
 
         return output
@@ -145,7 +146,7 @@ class Field:
         Transform data set to string that can be printed or displayed
         """
         result = ""
-        for line in self.ships:
+        for line in self.__ships:
             for i in line:
                 if i is None:
                     i = " "
@@ -163,11 +164,11 @@ class Field:
         Shoot at specific coordinates and return True if there is a ship and
           you had not shot here yet
         """
-        if isinstance(self.ships[coordinates[0]][coordinates[1]], Ship):
+        if isinstance(self.__ships[coordinates[0]][coordinates[1]], Ship):
             # Check if not already shot is at Ship class
-            return self.ships[coordinates[0]][coordinates[1]].shoot_at(coordinates)
+            return self.__ships[coordinates[0]][coordinates[1]].shoot_at(coordinates)
 
-        self.ships[coordinates[0]][coordinates[1]] = "*"
+        self.__ships[coordinates[0]][coordinates[1]] = "*"
         return False
 
 
