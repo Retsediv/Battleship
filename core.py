@@ -124,22 +124,24 @@ class Field:
     def field_without_ships(self):
         """ (Field) -> (str)
         Return string that display only cells which are already shot
-          "x" -> shot at ship
+          "■" -> shot at ship
           " " -> not shot
           "*" -> shot, but empty(no any ship here)
         """
-        output = ""
+        # output = ""
+        output = []
 
         for line in self.__ships:
+            out_line = []
             for ship_i in range(len(line)):
-            # for ship in line:
                 if isinstance(line[ship_i], Ship):
-                    output += "■" if line[ship_i].is_shot_at((self.__ships.index(line), ship_i)) else " "
+                    out_line.append("■" if line[ship_i].is_shot_at((self.__ships.index(line), ship_i)) else " ")
                 else:
-                    output += line[ship_i] if (line[ship_i] is not None) else " "
-            output += "\n"
+                    out_line.append(line[ship_i] if (line[ship_i] is not None) else " ")
 
-        return output
+            output.append(out_line)
+
+        return Field.beauty_field(output)
 
     def field_with_ships(self):
         """ (Field) -> (str)
@@ -157,6 +159,20 @@ class Field:
             result += "\n"
 
         return result
+
+    @staticmethod
+    def beauty_field(board):
+        """ (list) -> (str)
+        Make beautiful board(with numbers, letters and cells)
+        """
+        board = [[str(i+1) + ("" if i+1 == 10 else " ")] + board[i] for i in range(len(board))]
+        board.insert(0, ["  ", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J"])
+        for line in range(len(board)):
+            for i in range(len(board[line])):
+                board[line].insert(2*i+1, "|")
+            board[line].append("\n")
+
+        return "".join(["".join(line) for line in board])
 
     # Shooting!
     def shoot_at(self, coordinates):
@@ -199,9 +215,17 @@ class Player:
             letters = string.ascii_uppercase
             return letters.index(let)
 
-        coordinates = input()
-        row = int(coordinates[1:]) - 1  # because zero-indexation
-        column = index_of_letter(coordinates[0])
+        while True:
+            try:
+                coordinates = input()
+                row = int(coordinates[1:]) - 1  # because zero-indexation
+                column = index_of_letter(coordinates[0].upper())
+                if 0 <= row <= 9 and 0 <= column <= 9:
+                    break
+                else:
+                    print("Coordinates must be from A1 ... to ... J10. \nTry one more:")
+            except Exception:
+                print("Coordinates must be from A1 ... to ... J10. \nTry one more:")
 
         return row, column
 

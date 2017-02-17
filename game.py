@@ -32,9 +32,6 @@ class Game:
         """
         return self.__fields[index].field_with_ships()
 
-    def detect_winner(self):
-        pass
-
     def play(self):
         """ (Game) -> (str)
         Play function that return name of winner
@@ -43,12 +40,31 @@ class Game:
         def another_player(index):
             return 1 if index == 0 else 0
 
-        print("Game Battleship")
+        clear_board()
+        print("""
+                                     # #  ( )
+                                  ___#_#___|__
+                              _  |____________|  _
+                       _=====| | |            | | |==== _
+                 =====| |.---------------------------. | |====
+   <--------------------'   .  .  .  .  .  .  .  .   '--------------/
+     \                                                             /
+      \_______________________________________________WWS_________/
+  wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+                 _           _   _   _           _     _
+                | |         | | | | | |         | |   (_)
+                | |__   __ _| |_| |_| | ___  ___| |__  _ _ __
+                | '_ \ / _` | __| __| |/ _ \/ __| '_ \| | '_ \\
+                | |_) | (_| | |_| |_| |  __/\__ \ | | | | |_) |
+                |_.__/ \__,_|\__|\__|_|\___||___/_| |_|_| .__/
+                                                        | |
+                                                        |_|""")
+
         while self.__players[self.__currentPlayer].score != 20:  # while is not a winner
             another_player_index = another_player(self.__currentPlayer)
 
             while True:  # While player does't miss
-
                 # Show field of another player
                 print("Field of " + str(another_player_index + 1) + " player")
                 print(self.field_without_ships(another_player_index))
@@ -59,6 +75,7 @@ class Game:
 
                 # Shoot
                 shot = self.__fields[another_player_index].shoot_at(coordinates)
+                clear_board()
                 if not shot:
                     break
                 else:
@@ -68,3 +85,7 @@ class Game:
                 print()
 
             self.__currentPlayer = another_player_index
+
+
+def clear_board():
+    print("\n" * 40)
